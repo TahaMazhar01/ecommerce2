@@ -1,1 +1,1 @@
-{"name":"nestora-woocommerce-assignment","version":"1.0.0","private":true,"type":"module","scripts":{"start":"node scripts/serve.mjs","export":"node scripts/export.mjs"},"dependencies":{"@wp-playground/cli":"3.1.60","@zip.js/zip.js":"2.7.57"}}
+{"name":"nestora-woocommerce-assignment","version":"1.0.0","private":true,"type":"module","scripts":{"start":"node scripts/serve.mjs","tunnel":"node scripts/tunnel.mjs","export":"node scripts/export.mjs"},"dependencies":{"@wp-playground/cli":"3.1.60","@zip.js/zip.js":"2.7.57"}}

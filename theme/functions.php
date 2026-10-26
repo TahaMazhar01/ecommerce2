@@ -1,5 +1,30 @@
 <?php
 if(!defined('ABSPATH'))exit;
+// Dynamic tunnel rewriting for public sharing (Cloudflare, etc.)
+add_filter('wp_redirect',function($location){
+ if(!empty($_SERVER['HTTP_HOST'])&&strpos($_SERVER['HTTP_HOST'],'127.0.0.1')===false){
+  $proto=((!empty($_SERVER['HTTPS'])&&$_SERVER['HTTPS']!=='off')||(isset($_SERVER['HTTP_X_FORWARDED_PROTO'])&&$_SERVER['HTTP_X_FORWARDED_PROTO']==='https'))?'https://':'http://';
+  return preg_replace('#^https?://[^/]+(:9500)?#',$proto.$_SERVER['HTTP_HOST'],$location);
+ }
+ return $location;
+},999);
+add_filter('redirect_canonical',function($redirect_url){
+ if(!empty($_SERVER['HTTP_HOST'])&&strpos($_SERVER['HTTP_HOST'],'127.0.0.1')===false){
+  $proto=((!empty($_SERVER['HTTPS'])&&$_SERVER['HTTPS']!=='off')||(isset($_SERVER['HTTP_X_FORWARDED_PROTO'])&&$_SERVER['HTTP_X_FORWARDED_PROTO']==='https'))?'https://':'http://';
+  return preg_replace('#^https?://[^/]+(:9500)?#',$proto.$_SERVER['HTTP_HOST'],$redirect_url);
+ }
+ return $redirect_url;
+},999);
+add_action('template_redirect',function(){
+ if(!empty($_SERVER['HTTP_HOST'])&&strpos($_SERVER['HTTP_HOST'],'127.0.0.1')===false){
+  ob_start(function($buffer){
+   $proto=((!empty($_SERVER['HTTPS'])&&$_SERVER['HTTPS']!=='off')||(isset($_SERVER['HTTP_X_FORWARDED_PROTO'])&&$_SERVER['HTTP_X_FORWARDED_PROTO']==='https'))?'https://':'http://';
+   return str_replace(['http://127.0.0.1:9500','https://127.0.0.1:9500'],$proto.$_SERVER['HTTP_HOST'],$buffer);
+  });
+ }
+},0);
+
+
 add_action('after_setup_theme',function(){
  add_theme_support('woocommerce');add_theme_support('wc-product-gallery-zoom');add_theme_support('wc-product-gallery-slider');add_theme_support('wc-product-gallery-lightbox');add_theme_support('editor-styles');add_editor_style('assets/nestora.css');
  register_nav_menus(['nestora-main'=>'Nestora main navigation','nestora-footer'=>'Nestora footer navigation']);

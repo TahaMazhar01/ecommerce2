@@ -15,3 +15,6 @@ research/
 # Private deliverables and generated reports/exports
 dist/
 PROJECT-LOCATION.txt
+
+bin/
+*.exe
