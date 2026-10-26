@@ -1,0 +1,12 @@
+import {runCLI} from '@wp-playground/cli';
+import {readFile,writeFile,readdir,rename} from 'node:fs/promises';
+import path from 'node:path';
+import './check-mysql.mjs';
+const root=path.resolve(import.meta.dirname,'..');
+const access=JSON.parse(await readFile(path.join(root,'runtime/access.json'),'utf8'));
+const init=`<?php define('WP_INSTALLING',true); require '/wordpress/wp-load.php';require_once ABSPATH.'wp-admin/includes/upgrade.php';if(!is_blog_installed()){wp_install('Nestora','${access.admin}','nestora@example.invalid',false,'','${access.adminPassword}');update_option('home','http://127.0.0.1:9500');update_option('siteurl','http://127.0.0.1:9500');}echo 'WordPress installed on MySQL.';`;
+const server=await runCLI({command:'server',port:9500,'site-url':'http://127.0.0.1:9500',wp:'latest',php:'8.3',workers:2,skipSqliteSetup:true,blueprint:{features:{networking:true},steps:[{step:'runPHP',code:init}]},'mount-before-install':[{hostPath:path.join(root,'wordpress'),vfsPath:'/wordpress'}],wordpressInstallMode:'do-not-attempt-installing'});
+await new Promise((resolve,reject)=>{server.server.close(e=>e?reject(e):resolve());server.server.closeAllConnections();});await new Promise((resolve,reject)=>server.server.listen(9500,'127.0.0.1',resolve).once('error',reject));
+console.log('NESTORA_READY http://127.0.0.1:9500/');
+let busy=false;setInterval(async()=>{if(busy)return;busy=true;try{for(const name of (await readdir(path.join(root,'runtime'))).filter(n=>n.endsWith('.php-job'))){const file=path.join(root,'runtime',name);try{const r=await server.playground.run({code:await readFile(file,'utf8')});await writeFile(file+'.result.json',JSON.stringify({exitCode:r.exitCode,errors:r.errors,text:new TextDecoder().decode(r.bytes)}));}catch(e){await writeFile(file+'.result.json',JSON.stringify({error:String(e)}));}await rename(file,file+'.done');}}finally{busy=false;}},500).unref();
+process.on('SIGINT',async()=>{await server[Symbol.asyncDispose]();process.exit(0)});

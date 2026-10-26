@@ -1,0 +1,17 @@
+node_modules/
+wordpress/
+runtime/
+vendor/
+dist/*.zip
+dist/*.sql
+*.log
+
+research/
+**/LOCAL-ACCESS.txt
+**/wp-config.php
+.env
+.env.*
+
+# Private deliverables and generated reports/exports
+dist/
+PROJECT-LOCATION.txt

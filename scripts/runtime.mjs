@@ -1,0 +1,3 @@
+import {readFile,writeFile,stat} from 'node:fs/promises';import path from 'node:path';import {randomBytes} from 'node:crypto';
+export const root=path.resolve(import.meta.dirname,'..');
+export async function phpJob(code,label='task'){const file=path.join(root,'runtime',label+'-'+randomBytes(4).toString('hex')+'.php-job');await writeFile(file,code);const deadline=Date.now()+240000;while(Date.now()<deadline){if(await stat(file+'.result.json').catch(()=>null)){const r=JSON.parse(await readFile(file+'.result.json','utf8'));if(r.error||r.exitCode)throw Error(r.error||r.errors||r.text);return r;}await new Promise(r=>setTimeout(r,300));}throw Error('PHP job timed out: '+label);}

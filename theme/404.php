@@ -1,0 +1,1 @@
+<?php get_header();?><main id="main" class="ns-standard"><h1>A little out of place.</h1><p>We could not find that page. Let's find something for your home.</p><a class="ns-button" href="<?php echo esc_url(home_url('/shop/'));?>">Explore the shop ↗</a></main><?php get_footer();?>

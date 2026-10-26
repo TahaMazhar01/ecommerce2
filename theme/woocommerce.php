@@ -1,0 +1,1 @@
+<?php get_header();?><main id="main" class="ns-woo woocommerce"><div class="ns-commerce-heading"><?php woocommerce_breadcrumb();?></div><?php if(!is_product()):?><div class="ns-shop-search"><?php get_product_search_form();?></div><?php endif;woocommerce_content();?></main><?php get_footer();?>

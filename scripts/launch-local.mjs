@@ -1,0 +1,2 @@
+import {phpJob} from './runtime.mjs';
+console.log((await phpJob(`<?php require '/wordpress/wp-load.php';wp_set_current_user(1);update_option('woocommerce_coming_soon','no');update_option('woocommerce_store_pages_only','no');update_option('ecomus_sticky_add_to_cart_toggle','no');update_option('woocommerce_weight_unit','kg');update_option('woocommerce_dimension_unit','cm');flush_rewrite_rules();echo 'Local shop visibility enabled; the server remains bound to 127.0.0.1.';`,'local-visibility')).text);
